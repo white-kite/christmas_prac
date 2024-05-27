@@ -25,8 +25,9 @@ export default function example() {
 
 
     // Camera
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1500);
-    camera.position.set(1050, 500, 500);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 2000);
+    // 빨간색이 x축, 초록색이 y축, 파란색이 z축
+    camera.position.set(750, 480, 1250);
     scene.add(camera);
 
     // Light
@@ -35,17 +36,17 @@ export default function example() {
     directionalLight.position.z = 10;
     scene.add(directionalLight);
 
-    const light1 = new THREE.DirectionalLight(0xffffff, 15);
-    light1.position.set(100, 20, 10);
+    const light1 = new THREE.DirectionalLight(0xffffff, 8);
+    light1.position.set(300, 200, 400);
     scene.add(light1);
 
     const light2 = new THREE.DirectionalLight(0xffffff, 10);
-    light2.position.set(300, 200, 100);
+    light2.position.set(-500, 200, -500);
     scene.add(light2);
 
-    const light3 = new THREE.DirectionalLight(0xffffff, 0.8);
-    light3.position.set(-20, 10, 0);
-    scene.add(light3);
+    // const light3 = new THREE.DirectionalLight(0xffffff, 0.8);
+    // light3.position.set(-20, 10, 0);
+    // scene.add(light3);
 
 
     // Controls (카메라 시점 조절)
@@ -57,15 +58,21 @@ export default function example() {
         loadingScreen.style.display = 'none'; // 로딩화면 숨김처리
         canvas.style.display = 'block';
  
-    } 
+    }
+
+    // 가이드라인
+    const helper = new THREE.AxesHelper(3000); // 숫자는 사이즈, 없어도 되긴함
+    scene.add(helper);
 
     // GLB 모델 로드
     const gltfLoader = new GLTFLoader();
         
     gltfLoader.load("./models/room.glb", function(gltf) {
         const room = gltf.scene;
-        room.position.set(0, 0, 0);
+        room.position.set(1000, 0, 700);
         room.scale.set(300, 300, 300);
+        // 빨간색이 x축, 초록색이 y축, 파란색이 z축
+        room.rotation.set(0,600,0);
         console.log('room.scale 지정됨');
         scene.add(room);
         draw(); // 모델이 준비된 후 렌더링 루프 시작
