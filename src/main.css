@@ -1,5 +1,4 @@
 body {
-  height: 100%;
   margin: 0;
 }
 
@@ -11,8 +10,8 @@ body {
 
 #loading-screen {
   position: fixed;
-  width: 100vw; /* 뷰포트 너비 */
-  height: 100vh; /* 뷰포트 높이 */
+  width: 100%;
+  height: 100%;
   background-color: #000;
   color: #fff;
   display: flex;
@@ -67,6 +66,7 @@ body {
     opacity: 1;
   }
 }
+
 #loading-image-wrapper {
   position: fixed;
   top: 50%;
@@ -75,9 +75,8 @@ body {
 }
 
 #loading-image {
-  max-width: 80vw; /* 화면 너비의 80%를 최대 너비로 설정합니다. */
-  max-height: 80vh; /* 화면 높이의 80%를 최대 높이로 설정합니다. */
+  max-width: 80vw; /* 화면 너비의 30%를 최대 너비로 설정합니다. */
+  max-height: 80vh; /* 화면 높이의 30%를 최대 높이로 설정합니다. */
   width: auto; /* 너비를 자동으로 설정합니다. */
   height: auto; /* 높이를 자동으로 설정합니다. */
 }
-

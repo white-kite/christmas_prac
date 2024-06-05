@@ -40,8 +40,8 @@ export default function example() {
     light1.position.set(300, 200, 400);
     scene.add(light1);
 
-    const light2 = new THREE.DirectionalLight(0x0000FF, 0.8);
-    light2.position.set(-500, 200, 300);
+    const light2 = new THREE.DirectionalLight("yellow", 0.8); //0x0000FF blue
+    light2.position.set(-300, 200, 300);
     scene.add(light2);
 
 
@@ -146,8 +146,18 @@ export default function example() {
         stars.rotation.y += 0.001;
     }
 
+    function setSize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.render(scene, camera);
+    }
+
+    // 이벤트
+    window.addEventListener("resize", setSize);
+
     // 화면 크기 조정 이벤트
-    window.addEventListener("resize", function() {
+    /*window.addEventListener("resize", function() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -161,7 +171,7 @@ export default function example() {
         const loadingScreen2 = document.getElementById('img');
         loadingScreen2.style.width = window.innerWidth + 'px';
         loadingScreen2.style.height = window.innerHeight + 'px';
-    });
+    });*/
 
 
     // 초기 로딩 화면 설정
