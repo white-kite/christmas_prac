@@ -40,17 +40,29 @@ export default function example() {
     light1.position.set(300, 200, 400);
     scene.add(light1);
 
-    const light2 = new THREE.DirectionalLight(0xffffff, 0.8);
-    light2.position.set(-500, 200, -500);
+    const light2 = new THREE.DirectionalLight(0x0000FF, 0.8);
+    light2.position.set(-500, 200, 300);
     scene.add(light2);
-
-    // const light3 = new THREE.DirectionalLight(0xffffff, 0.8);
-    // light3.position.set(-20, 10, 0);
-    // scene.add(light3);
 
 
     // Controls (카메라 시점 조절)
     const controls = new OrbitControls(camera, renderer.domElement);
+
+    controls.enableDamping = true; // 관성 효과 활성화
+    controls.dampingFactor = 0.5; // 관성의 정도
+
+    // 회전 범위 설정
+    controls.minAzimuthAngle = 0 ; // -90도 -Math.PI / 2
+    controls.maxAzimuthAngle = Math.PI / 2;  // 90도
+
+    // 회전 비활성화
+    // controls.enableRotate = false;
+
+    // 카메라가 타겟에 가까워질 수 있는 최소 거리 설정
+    controls.minDistance = 600;
+
+    // 카메라가 타겟으로부터 멀어질 수 있는 최대 거리 설정
+    controls.maxDistance = 3000;
 
 
     // 로딩 화면 숨김 및 GLB 파일 로드
@@ -80,11 +92,25 @@ export default function example() {
         console.error('GLB 파일 로딩 에러:', error);
     });
 
+    // 뒷 배경 추가
+    const backPlaneGeometry = new THREE.PlaneGeometry(8000,8000,8000);
+    const backPlaneMaterial = new THREE.MeshBasicMaterial({color:'darkgrey'});
+    const backPlaneMaterial2 = new THREE.MeshBasicMaterial({color:'pink'});
+
+    const backPlane1 = new THREE.Mesh(backPlaneGeometry, backPlaneMaterial);
+    backPlane1.position.set(400,500, -400);
+    const backPlane2 = new THREE.Mesh(backPlaneGeometry, backPlaneMaterial2);
+    backPlane2.position.set(-500,0, 0);
+    backPlane2.rotation.x = Math.PI / 2  // -90도  Math.PI / 2
+    backPlane2.rotation.y = Math.PI / 2
+    
+    scene.add(backPlane1, backPlane2);
+
     // 별빛을 표현할 재질 생성
     const starMaterial = new THREE.PointsMaterial({
         color: 0xffffff, // 별빛 색상
-        size: 2, // 별빛 크기
-        //sizeAttenuation: true // 카메라에서 멀어질수록 별이 작아지도록 설정
+        size: 10, // 별빛 크기
+        sizeAttenuation: true // 카메라에서 멀어질수록 별이 작아지도록 설정
     });
 
     // 별빛 점들 생성
@@ -126,6 +152,15 @@ export default function example() {
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.render(scene, camera);
+
+        // loading-screen 크기 조정
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.style.width = window.innerWidth + 'px';
+        loadingScreen.style.height = window.innerHeight + 'px';
+
+        const loadingScreen2 = document.getElementById('img');
+        loadingScreen2.style.width = window.innerWidth + 'px';
+        loadingScreen2.style.height = window.innerHeight + 'px';
     });
 
 
