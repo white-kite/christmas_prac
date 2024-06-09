@@ -92,20 +92,6 @@ export default function example() {
         console.error('GLB 파일 로딩 에러:', error);
     });
 
-    // 뒷 배경 추가
-    const backPlaneGeometry = new THREE.PlaneGeometry(8000,8000,8000);
-    const backPlaneMaterial = new THREE.MeshBasicMaterial({color:'darkgrey'});
-    const backPlaneMaterial2 = new THREE.MeshBasicMaterial({color:'pink'});
-
-    const backPlane1 = new THREE.Mesh(backPlaneGeometry, backPlaneMaterial);
-    backPlane1.position.set(400,500, -400);
-    const backPlane2 = new THREE.Mesh(backPlaneGeometry, backPlaneMaterial2);
-    backPlane2.position.set(-500,0, 0);
-    backPlane2.rotation.x = Math.PI / 2  // -90도  Math.PI / 2
-    backPlane2.rotation.y = Math.PI / 2
-    
-    scene.add(backPlane1, backPlane2);
-
     // 별빛을 표현할 재질 생성
     const starMaterial = new THREE.PointsMaterial({
         color: 0xffffff, // 별빛 색상
@@ -135,6 +121,22 @@ export default function example() {
 
     // 씬에 별빛 객체 추가
     scene.add(stars);
+
+    // 뒷 배경 추가
+    // Texture Loader를 사용하여 이미지 로드
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load('./images/plane1.jpg', function(texture) {
+        const backPlaneGeometry = new THREE.PlaneGeometry(8000, 8000);
+        const backPlaneMaterial = new THREE.MeshBasicMaterial({
+            map: texture // 텍스처 매핑
+        });
+        const backPlane1 = new THREE.Mesh(backPlaneGeometry, backPlaneMaterial);
+        backPlane1.position.set(400, 500, -400);
+        const backPlane2 = new THREE.Mesh(backPlaneGeometry, backPlaneMaterial);
+        backPlane2.position.set(-500,0, 0);
+        backPlane2.rotation.y = Math.PI / 2 // 90도
+        scene.add(backPlane1, backPlane2);
+    });
 
     // 그리기
     function draw() {
