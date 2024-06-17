@@ -179,7 +179,7 @@ export default function example() {
     // 초기 로딩 화면 설정
     canvas.style.display = 'none';
     loadingScreen.style.display = 'flex';
-    // setTimeout(hideLoadingScreen, 3000); // 3초 후 로딩 화면 숨김
+    setTimeout(hideLoadingScreen, 3000); // 3초 후 로딩 화면 숨김
    
 }
 
