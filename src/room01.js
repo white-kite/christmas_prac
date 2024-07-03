@@ -80,6 +80,7 @@ export default function room1() {
     const gltfLoader = new GLTFLoader();
         
     let room; // 전역변수로 설정
+    let currentCube; // 현재 존재하는 큐브를 저장할 변수
 
     gltfLoader.load("./models/room.glb", function(gltf) {
         room = gltf.scene;
@@ -170,6 +171,8 @@ export default function room1() {
 
     window.addEventListener('click', onDocumentClick);
 
+    let clickPosition = null;
+
     function onDocumentClick(event) {
         event.preventDefault();
 
@@ -180,23 +183,21 @@ export default function room1() {
         const raycaster = new THREE.Raycaster();
         raycaster.setFromCamera(mouse, camera);
 
-        console.log('raycaster ??? ',raycaster)
+        const intersects = raycaster.intersectObject(room, true);
 
-        if (room) {
-            const intersects = raycaster.intersectObject(room, true);
-            if (intersects.length > 0) {
-                const clickedObject = intersects[0].object;
-                console.log(clickedObject.name);
+        if (intersects.length > 0) {
+            const clickedObject = intersects[0].object;
+            console.log(clickedObject.name);
+            clickPosition = intersects[0].point; // 클릭한 위치 저장
 
                 if (clickedObject.name === "pngfindcom-medieval-banner-png-1287972") {
                     showImageFullScreen('/models/letter.png', 'default');
                 } else if (clickedObject.name === "group_0" || /^sofa/.test(clickedObject.name) // clickedObject.name이 "sofa"로 시작하는 모든 단어를 인식
                     || clickedObject.name.includes("leaves") || clickedObject.name.includes("Wall__5_") 
                     || /^Sphere/.test(clickedObject.name) || clickedObject.name.includes("g_Star012_25") 
-                    || clickedObject.name.includes("ChristmasTree")) {
+                    || clickedObject.name.includes("ChristmasTree")|| clickedObject.name.includes("Ground")) {
                     showImageFullScreen('/models/question01.png', 'custom');
                 }
-            }
         }
     }
 
@@ -267,6 +268,10 @@ export default function room1() {
 
             yesButton.addEventListener('click', (event) => {
                 event.stopPropagation(); // 클릭 이벤트 전파 막기
+                if (clickPosition) { // 선물 놓기
+                    
+                    createCubeAtClickPosition(clickPosition);
+                }
                 removeElements();
             });
 
@@ -290,5 +295,17 @@ export default function room1() {
             window.removeEventListener('resize', positionButtons);
             document.body.style.pointerEvents = 'auto'; // 배경 클릭 차단 해제
         });
+    }
+
+    function createCubeAtClickPosition(position) {
+        if (currentCube) {
+            scene.remove(currentCube); // 기존 큐브 삭제
+        }
+        const geometry = new THREE.BoxGeometry(50, 50, 50);
+        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.copy(position);
+        scene.add(cube);
+        currentCube = cube; // 새로운 큐브 저장
     }
 }
