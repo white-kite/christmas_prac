@@ -1,3 +1,4 @@
-import example from "./ex04";
+//import room1 from "./exSumin.js";
+import room1 from "./room01.js";
 
-example();
+room1();
