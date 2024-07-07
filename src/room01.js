@@ -168,18 +168,42 @@ export default function room1() {
     setTimeout(hideLoadingScreen, 3000); // 3초 후 로딩 화면 숨김
 
 
-    // BoxGeometry 이용하여 편즤의 형태를 정의합니다.
-    const onegeometry = new THREE.BoxGeometry(100, 200, 3, 32); // 매개변수는 (상단 반지름, 하단 반지름, 높이, 세그먼트 수)입니다.
+    /** @@@@@@@@@@@@@@편지설정@@@@@@@@@@@@@@@@@@ */
 
-    // 갈색으로 색칠된 재질을 만듭니다.
-    const onematerial = new THREE.MeshBasicMaterial({ color: "#704F4F" }); // 갈색 색상 7C3E29
+    const letterImages = [
+        './images/곰인형이갖고싶은미셸.png',
+        './images/산타를노리는케이트.png',
+        './images/생양파율리.png',
+        // 필요에 따라 더 많은 이미지 파일 경로 추가
+    ];
 
-    // 기둥의 메쉬를 생성합니다.
-    const cylinder = new THREE.Mesh(onegeometry, onematerial);
-    cylinder.position.set(300, 200, -200);
 
-    // scene에 기둥을 추가합니다.
-    scene.add(cylinder);
+    // 랜덤 이미지 선택 함수
+    function getRandomImage(imagesArray) {
+        const randomIndex = Math.floor(Math.random() * imagesArray.length);
+        const selectedImage = imagesArray[randomIndex];
+        console.log(`Selected image: ${selectedImage}`); // 선택된 이미지 파일 경로 출력 // 이걸로 게임의 승리 실패 조건 만들기
+        return selectedImage;
+    }
+
+    // BoxGeometry 이용하여 편지의 형태를 정의합니다.
+    const letterGeometry = new THREE.BoxGeometry(100, 200, 3); // 매개변수는 (가로, 세로, 깊이)입니다.
+
+    // 전역 변수로 랜덤 이미지를 저장합니다.
+    const randomImage = getRandomImage(letterImages);
+
+    // TextureLoader를 사용하여 이미지를 로드합니다.
+    const texture = textureLoader.load(randomImage, () => {
+        // 텍스처가 로드된 후 콜백 함수에서 재질을 만듭니다.
+        const letterMaterial = new THREE.MeshBasicMaterial({ map: texture });
+
+        // 편지의 메쉬를 생성합니다.
+        const cylinder = new THREE.Mesh(letterGeometry, letterMaterial);
+        cylinder.position.set(300, 200, -200);
+
+        // scene에 기둥을 추가합니다.
+        scene.add(cylinder);
+    });
 
     /* @@@@@@@@@@@@@@@@@@@@@@@@@여기서부터 클릭이벤트@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
 
@@ -205,7 +229,8 @@ export default function room1() {
             clickPosition = intersects[0].point; // 클릭한 위치 저장
 
                 if (clickedObject.name === "Wall__1_") { //편지 띄우기
-                    showImageFullScreen('/models/letter.png', 'default');
+                    //showImageFullScreen('/models/letter.png', 'default');
+                    showImageFullScreen(randomImage, 'default');
                 } else if (clickedObject.name === "group_0" || /^sofa/.test(clickedObject.name) // clickedObject.name이 "sofa"로 시작하는 모든 단어를 인식
                     || clickedObject.name.includes("leaves") || clickedObject.name.includes("Wall__5_") 
                     || /^Sphere/.test(clickedObject.name) || clickedObject.name.includes("g_Star012_25") 
