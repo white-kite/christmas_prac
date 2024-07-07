@@ -174,7 +174,8 @@ export default function room1() {
         './images/곰인형이갖고싶은미셸.png',
         './images/산타를노리는케이트.png',
         './images/생양파율리.png',
-        // 필요에 따라 더 많은 이미지 파일 경로 추가
+        './images/여름산타를원하는다니엘.png',
+        './images/울지않는찰리.png',
     ];
 
 
