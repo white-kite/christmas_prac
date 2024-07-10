@@ -1,9 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import dat from "dat.gui";
-import gsap from "gsap";
-
 
 export default function room1() {
     
@@ -80,7 +77,6 @@ export default function room1() {
     const gltfLoader = new GLTFLoader();
         
     let room; // 전역변수로 설정
-    let currentCube; // 현재 존재하는 큐브를 저장할 변수
 
     gltfLoader.load("./models/room.glb", function(gltf) {
         room = gltf.scene;
@@ -230,13 +226,13 @@ export default function room1() {
             clickPosition = intersects[0].point; // 클릭한 위치 저장
 
                 if (clickedObject.name === "Wall__1_") { //편지 띄우기
-                    //showImageFullScreen('/models/letter.png', 'default');
+                    //showImageFullScreen('/images/letter.png', 'default');
                     showImageFullScreen(randomImage, 'default');
                 } else if (clickedObject.name === "group_0" || /^sofa/.test(clickedObject.name) // clickedObject.name이 "sofa"로 시작하는 모든 단어를 인식
                     || clickedObject.name.includes("leaves") || clickedObject.name.includes("Wall__5_") 
                     || /^Sphere/.test(clickedObject.name) || clickedObject.name.includes("g_Star012_25") 
                     || clickedObject.name.includes("ChristmasTree")|| clickedObject.name.includes("Ground")) {
-                    showImageFullScreen('/models/question01.png', 'custom');
+                    showImageFullScreen('/images/question01.png', 'custom');
                 }
         }
     }
@@ -259,13 +255,13 @@ export default function room1() {
             imageElement.style.maxHeight = '70vw';
 
             const yesButton = document.createElement('img');
-            yesButton.src = '/models/yesBtn.png';
+            yesButton.src = '/images/yesBtn.png';
             yesButton.id = 'yesButton';
             yesButton.style.position = 'absolute';
             yesButton.style.zIndex = '10000';
 
             const noButton = document.createElement('img');
-            noButton.src = '/models/noBtn.png';
+            noButton.src = '/images/noBtn.png';
             noButton.id = 'noButton';
             noButton.style.position = 'absolute';
             noButton.style.zIndex = '10000';
@@ -310,7 +306,7 @@ export default function room1() {
                 event.stopPropagation(); // 클릭 이벤트 전파 막기
                 if (clickPosition) { // 선물 놓기
                     
-                    createCubeAtClickPosition(clickPosition);
+                    createGiftAtClickPosition(clickPosition);
                 }
                 removeElements();
             });
@@ -337,15 +333,60 @@ export default function room1() {
         });
     }
 
-    function createCubeAtClickPosition(position) {
-        if (currentCube) {
-            scene.remove(currentCube); // 기존 큐브 삭제
+    let giftBox; // 선물
+    let currentGift; // 현재 존재하는 선물을 저장할 변수
+    
+    // 선물 로딩
+    gltfLoader.load("/models/giftBox_joinSpare.glb", (gltf) => {
+
+        if (gltf.scene) {
+            gltf.scene.castShadow = true;
+    
+            gltf.scene.traverse((child) => {
+
+                //Cylinder
+                if (    child.name == "rebon" 
+                    ||  child.name == "BezierCircle"
+                    ||  child.name == "BezierCircle001"
+                    ||  child.name == "BezierCircle002"
+                    ||  child.name == "BezierCircle003"  
+                ) {
+                    const rebonMaterial = child.material.clone();
+                    rebonMaterial.color.set("red");
+                    
+                    child.material = rebonMaterial;
+                    if (child.isMesh) {
+                        child.material = rebonMaterial;
+                    }
+                } else if (child.name == "cube" ){
+                    const cubeMaterial = child.material.clone();
+                    cubeMaterial.color.set("green");
+                    
+                    child.material = cubeMaterial;
+                    if (child.isMesh) {
+                        child.material = cubeMaterial;
+                    }
+                } 
+                child.castShadow = true; // 그림자 캐스팅
+                child.receiveShadow = true; // 그림자 수신
+                
+            });
         }
-        const geometry = new THREE.BoxGeometry(50, 50, 50);
-        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
-        const cube = new THREE.Mesh(geometry, material);
-        cube.position.copy(position);
-        scene.add(cube);
-        currentCube = cube; // 새로운 큐브 저장
+        giftBox = gltf.scene;
+        
+        giftBox.scale.set(20, 20, 20);
+
+    }, undefined, (error) => {
+        console.error('GLTF 파일 로드 오류', error);
+    });
+
+    // 선물두기
+    function createGiftAtClickPosition(position) {
+        if (currentGift) {
+            scene.remove(currentGift); // 기존 선물 삭제
+        }
+        giftBox.position.copy(position); // 이 부분에 if 문 걸어서 적절한 위치 선정 필요
+        scene.add(giftBox);
+        currentGift = giftBox; // 새로운 큐브 저장
     }
 }
