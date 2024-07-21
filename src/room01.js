@@ -174,13 +174,39 @@ export default function room1() {
         './images/울지않는찰리.png',
     ];
 
+    // 랜덤 이미지 변수
+    let selectedImage;
+    // 정답 위치 변수
+    let correctPlace;
 
     // 랜덤 이미지 선택 함수
     function getRandomImage(imagesArray) {
         const randomIndex = Math.floor(Math.random() * imagesArray.length);
-        const selectedImage = imagesArray[randomIndex];
+        selectedImage = imagesArray[randomIndex];
         console.log(`Selected image: ${selectedImage}`); // 선택된 이미지 파일 경로 출력 // 이걸로 게임의 승리 실패 조건 만들기
+        
+        // 승리 실패 조건 설정
+        setCorrectPlace(selectedImage);
+        
         return selectedImage;
+    }
+
+    // 이미지에 따라 correctPlace 설정 함수
+    function setCorrectPlace(image) {
+        if (image.includes('미셸')) {
+            correctPlace = 'sofa';
+        } else if (image.includes('케이트')) {
+            correctPlace = 'tree';
+        } else if (image.includes('율리')) {
+            correctPlace = 'window';
+        } else if (image.includes('다니엘')) {
+            correctPlace = 'ground';
+        } else if (image.includes('찰리')) {
+            correctPlace = 'sofa';
+        } else {
+            correctPlace = 'unknown'; // 해당 조건이 없는 경우 기본값 설정
+        }
+        console.log(`Correct place: ${correctPlace}`); // 설정된 correctPlace 출력
     }
 
     // BoxGeometry 이용하여 편지의 형태를 정의합니다.
@@ -196,7 +222,7 @@ export default function room1() {
 
         // 편지의 메쉬를 생성합니다.
         const cylinder = new THREE.Mesh(letterGeometry, letterMaterial);
-        cylinder.position.set(300, 200, -200);
+        cylinder.position.set(350, 250, -200);
 
         // scene에 기둥을 추가합니다.
         scene.add(cylinder);
@@ -207,6 +233,7 @@ export default function room1() {
     window.addEventListener('click', onDocumentClick);
 
     let clickPosition = null;
+    let clickedObject;
 
     function onDocumentClick(event) {
         event.preventDefault();
@@ -221,7 +248,7 @@ export default function room1() {
         const intersects = raycaster.intersectObject(room, true);
 
         if (intersects.length > 0) {
-            const clickedObject = intersects[0].object;
+            clickedObject = intersects[0].object;
             console.log(clickedObject.name);
             clickPosition = intersects[0].point; // 클릭한 위치 저장
 
@@ -230,6 +257,7 @@ export default function room1() {
                     showImageFullScreen(randomImage, 'default');
                 } else if (clickedObject.name === "group_0" || /^sofa/.test(clickedObject.name) // clickedObject.name이 "sofa"로 시작하는 모든 단어를 인식
                     || clickedObject.name.includes("leaves") || clickedObject.name.includes("Wall__5_") 
+                    || clickedObject.name.includes("window")
                     || /^Sphere/.test(clickedObject.name) || clickedObject.name.includes("g_Star012_25") 
                     || clickedObject.name.includes("ChristmasTree")|| clickedObject.name.includes("Ground")) {
                     showImageFullScreen('/images/question01.png', 'custom');
@@ -289,7 +317,6 @@ export default function room1() {
             window.addEventListener('resize', positionButtons);
 
             const removeElements = () => {
-                console.log('Removing elements');
                 imageElement.remove();
                 yesButton.remove();
                 noButton.remove();
@@ -305,8 +332,9 @@ export default function room1() {
             yesButton.addEventListener('click', (event) => {
                 event.stopPropagation(); // 클릭 이벤트 전파 막기
                 if (clickPosition) { // 선물 놓기
+                    console.log("clickposiotn???",clickPosition);
                     
-                    createGiftAtClickPosition(clickPosition);
+                    createGiftAtClickPosition(clickedObject);
                 }
                 removeElements();
             });
@@ -380,13 +408,74 @@ export default function room1() {
         console.error('GLTF 파일 로드 오류', error);
     });
 
+    // 선택된 장소 correctPlace와 비교할 대상
+    let selectedPlace;
+
     // 선물두기
-    function createGiftAtClickPosition(position) {
+    function createGiftAtClickPosition(clickPosition) {
         if (currentGift) {
             scene.remove(currentGift); // 기존 선물 삭제
         }
-        giftBox.position.copy(position); // 이 부분에 if 문 걸어서 적절한 위치 선정 필요
+        
+        
+        if (/^sofa/.test(clickedObject.name)) {
+            selectedPlace='sofa';
+            giftBox.position.set(600,150,235);
+            console.log(selectedPlace);
+        } else if (/^Sphere/.test(clickedObject.name) || clickedObject.name.includes("g_Star012_25")
+                    || clickedObject.name.includes("ChristmasTree") || clickedObject.name.includes("leaves")) {
+            selectedPlace='tree';
+            giftBox.position.set(-10,80,320);
+            console.log(selectedPlace);
+        } else if (clickedObject.name.includes("window") || clickedObject.name.includes("Wall__5_")) {
+            selectedPlace='window';
+            giftBox.position.set(-270,80, 730);
+            console.log(selectedPlace);
+        } else if (clickedObject.name === "group_0" || clickedObject.name.includes("Ground") ) {
+            selectedPlace='ground';
+            giftBox.position.set(97, 80, 750);
+            console.log(selectedPlace);
+        } else {
+            selectedPlace = 'unknown'; // 해당 조건이 없는 경우 기본값 설정
+        }
+        
+        //giftBox.position.copy(clickPosition); // 이 부분에 if 문 걸어서 적절한 위치 선정 필요
         scene.add(giftBox);
         currentGift = giftBox; // 새로운 큐브 저장
     }
+
+    /*
+    // @@@@@@@@@@@@@@@드래그 클릭 인식 방지@@@@@@@@@@@
+    let isDragging = false;
+    let mouseDownTime = 0;
+
+    // 마우스 다운 이벤트 핸들러
+    function onDocumentMouseDown(event) {
+        isDragging = false;
+        mouseDownTime = Date.now();
+    }
+
+    // 마우스 무브 이벤트 핸들러
+    function onDocumentMouseMove(event) {
+        isDragging = true;
+    }
+
+    // 마우스 업 이벤트 핸들러
+    function onDocumentMouseUp(event) {
+        if (!isDragging) {
+            // 짧은 클릭인 경우에만 onDocumentClick 호출
+            onDocumentClick(event);
+        } else {
+            const clickDuration = Date.now() - mouseDownTime;
+            if (clickDuration < 200) { // 200ms 이하인 경우 짧은 클릭으로 간주
+                onDocumentClick(event);
+            }
+        }
+        isDragging = false;
+    }
+
+    document.addEventListener('mousedown', onDocumentMouseDown, false);
+    document.addEventListener('mousemove', onDocumentMouseMove, false);
+    document.addEventListener('mouseup', onDocumentMouseUp, false); 
+    */
 }
