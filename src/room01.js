@@ -6,6 +6,7 @@ export default function room1() {
     
     const canvas = document.querySelector("#three-canvas");
     const loadingScreen = document.getElementById('loading-screen');
+    const loadingImage = document.getElementById('loading-image'); // 전역으로 선언하여 참조
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({
@@ -334,7 +335,9 @@ export default function room1() {
                 if (clickPosition) { // 선물 놓기
                     console.log("clickposiotn???",clickPosition);
                     
+                    // 선물 놓기 및 승패 판정
                     createGiftAtClickPosition(clickedObject);
+
                 }
                 removeElements();
             });
@@ -439,11 +442,36 @@ export default function room1() {
             selectedPlace = 'unknown'; // 해당 조건이 없는 경우 기본값 설정
         }
         
-        //giftBox.position.copy(clickPosition); // 이 부분에 if 문 걸어서 적절한 위치 선정 필요
         scene.add(giftBox);
         currentGift = giftBox; // 새로운 큐브 저장
-    }
 
+        // 승패판정
+        const loadingText = document.querySelector('.loading-text');
+
+        if(correctPlace === selectedPlace){
+            setTimeout(() => {
+                if (loadingImage) {
+                    loadingImage.src = '/images/giftGivingSuccess.gif'; 
+                }
+                if (loadingText) {
+                    loadingText.style.display = 'none';
+                }
+                loadingScreen.style.display = 'block';
+                canvas.style.display = 'none';
+            }, 2000); 
+        } else {
+            setTimeout(() => {
+                if (loadingImage) {
+                    loadingImage.src = '/images/giftGivingFail.gif'; 
+                }
+                if (loadingText) {
+                    loadingText.style.display = 'none';
+                }
+                loadingScreen.style.display = 'block';
+                canvas.style.display = 'none';
+            }, 2000); 
+        }
+    }
     /*
     // @@@@@@@@@@@@@@@드래그 클릭 인식 방지@@@@@@@@@@@
     let isDragging = false;
