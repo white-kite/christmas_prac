@@ -7,6 +7,8 @@ export default function room1() {
     const canvas = document.querySelector("#three-canvas");
     const loadingScreen = document.getElementById('loading-screen');
     const loadingImage = document.getElementById('loading-image'); // 전역으로 선언하여 참조
+    
+    
 
     // Renderer
     const renderer = new THREE.WebGLRenderer({
@@ -53,6 +55,10 @@ export default function room1() {
     controls.minAzimuthAngle = 0 ; // -90도 -Math.PI / 2
     controls.maxAzimuthAngle = Math.PI / 2;  // 90도
 
+    // Set the vertical angle limits (in radians)
+    controls.minPolarAngle = Math.PI / 4; // Minimum vertical angle (45 degrees Math.PI / 4)
+    controls.maxPolarAngle = Math.PI / 2; // Maximum vertical angle (90 degrees)
+
     // 회전 비활성화
     // controls.enableRotate = false;
 
@@ -60,7 +66,7 @@ export default function room1() {
     controls.minDistance = 600;
 
     // 카메라가 타겟으로부터 멀어질 수 있는 최대 거리 설정
-    controls.maxDistance = 3000;
+    controls.maxDistance = 2500;
 
 
     // 로딩 화면 숨김 및 GLB 파일 로드
@@ -81,7 +87,7 @@ export default function room1() {
 
     gltfLoader.load("./models/room.glb", function(gltf) {
         room = gltf.scene;
-        room.position.set(1000, 0, 700);
+        room.position.set(1200, -100, 700);
         room.scale.set(300, 300, 300);
         // 빨간색이 x축, 초록색이 y축, 파란색이 z축
         room.rotation.set(0,600,0);
@@ -223,7 +229,7 @@ export default function room1() {
 
         // 편지의 메쉬를 생성합니다.
         const cylinder = new THREE.Mesh(letterGeometry, letterMaterial);
-        cylinder.position.set(350, 250, -200);
+        cylinder.position.set(550, 150, -200);
 
         // scene에 기둥을 추가합니다.
         scene.add(cylinder);
@@ -366,6 +372,7 @@ export default function room1() {
 
     let giftBox; // 선물
     let currentGift; // 현재 존재하는 선물을 저장할 변수
+    let chance = 0; // 선물 놓을 기회
     
     // 선물 로딩
     gltfLoader.load("/models/giftBox_joinSpare.glb", (gltf) => {
@@ -416,6 +423,11 @@ export default function room1() {
 
     // 선물두기
     function createGiftAtClickPosition(clickPosition) {
+
+        console.log("chance?? 11111??", chance);
+        chance = ++chance; // 기회 한번 씀
+        console.log("chance?? 2???", chance);
+
         if (currentGift) {
             scene.remove(currentGift); // 기존 선물 삭제
         }
@@ -446,31 +458,51 @@ export default function room1() {
         currentGift = giftBox; // 새로운 큐브 저장
 
         // 승패판정
-        const loadingText = document.querySelector('.loading-text');
-
-        if(correctPlace === selectedPlace){
+        if (correctPlace === selectedPlace) {
             setTimeout(() => {
                 if (loadingImage) {
-                    loadingImage.src = '/images/giftGivingSuccess.gif'; 
+                    loadingImage.src = '/images/giftGivingSuccess.gif';
                 }
-                if (loadingText) {
-                    loadingText.style.display = 'none';
-                }
-                loadingScreen.style.display = 'block';
+                loadingScreen.style.display = 'flex';
                 canvas.style.display = 'none';
-            }, 2000); 
+
+                // 여기서 다시하기 처음으로 버튼
+        
+            }, 1000);
+        } else if( chance > 3) { // 3번까지 기회
+            setTimeout(() => {
+                console.log("3번 틀림")
+                if (loadingImage) {
+                    loadingImage.src = '/images/giftGivingFail.gif';
+                }
+                loadingScreen.style.display = 'flex';
+                canvas.style.display = 'none';
+        
+                // 추가: 일정 시간 후 loadingScreen 숨기기
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    canvas.style.display = 'block';
+                }, 5000); // 2초 후에 loadingScreen을 다시 숨김
+
+                // 여기서 다시하기 처음으로 버튼
+
+            }, 1000);
         } else {
             setTimeout(() => {
                 if (loadingImage) {
-                    loadingImage.src = '/images/giftGivingFail.gif'; 
+                    loadingImage.src = '/images/giftGivingFail.gif';
                 }
-                if (loadingText) {
-                    loadingText.style.display = 'none';
-                }
-                loadingScreen.style.display = 'block';
+                loadingScreen.style.display = 'flex';
                 canvas.style.display = 'none';
-            }, 2000); 
+        
+                // 추가: 일정 시간 후 loadingScreen 숨기기
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                    canvas.style.display = 'block';
+                }, 4000); // 4초 후에 loadingScreen을 다시 숨김
+            }, 1000);
         }
+        
     }
     /*
     // @@@@@@@@@@@@@@@드래그 클릭 인식 방지@@@@@@@@@@@
