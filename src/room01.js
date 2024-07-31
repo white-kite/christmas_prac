@@ -27,7 +27,7 @@ export default function room1() {
     // Camera
     const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 5000);
     // 빨간색이 x축, 초록색이 y축, 파란색이 z축
-    camera.position.set(750, 480, 1250);
+    camera.position.set(800, 420, 1350);
     scene.add(camera);
 
     // Light
@@ -91,7 +91,6 @@ export default function room1() {
         room.scale.set(300, 300, 300);
         // 빨간색이 x축, 초록색이 y축, 파란색이 z축
         room.rotation.set(0,600,0);
-        console.log('room.scale 지정됨');
         scene.add(room);
         draw(); // 모델이 준비된 후 렌더링 루프 시작
     }, undefined, function(error) {
@@ -185,6 +184,8 @@ export default function room1() {
     let selectedImage;
     // 정답 위치 변수
     let correctPlace;
+    // 선물 박스 색
+    let giftColor;
 
     // 랜덤 이미지 선택 함수
     function getRandomImage(imagesArray) {
@@ -202,14 +203,19 @@ export default function room1() {
     function setCorrectPlace(image) {
         if (image.includes('미셸')) {
             correctPlace = 'sofa';
+            giftColor = 'brown';
         } else if (image.includes('케이트')) {
             correctPlace = 'tree';
+            giftColor = 'red';
         } else if (image.includes('율리')) {
             correctPlace = 'window';
+            giftColor = 'white';
         } else if (image.includes('다니엘')) {
             correctPlace = 'ground';
+            giftColor = 'green';
         } else if (image.includes('찰리')) {
             correctPlace = 'sofa';
+            giftColor = 'blue';
         } else {
             correctPlace = 'unknown'; // 해당 조건이 없는 경우 기본값 설정
         }
@@ -264,7 +270,7 @@ export default function room1() {
                     showImageFullScreen(randomImage, 'default');
                 } else if (clickedObject.name === "group_0" || /^sofa/.test(clickedObject.name) // clickedObject.name이 "sofa"로 시작하는 모든 단어를 인식
                     || clickedObject.name.includes("leaves") || clickedObject.name.includes("Wall__5_") 
-                    || clickedObject.name.includes("window")
+                    || clickedObject.name.includes("window") || clickedObject.name.includes("ground")
                     || /^Sphere/.test(clickedObject.name) || clickedObject.name.includes("g_Star012_25") 
                     || clickedObject.name.includes("ChristmasTree")|| clickedObject.name.includes("Ground")) {
                     showImageFullScreen('/images/question01.png', 'custom');
@@ -390,7 +396,7 @@ export default function room1() {
                     ||  child.name == "BezierCircle003"  
                 ) {
                     const rebonMaterial = child.material.clone();
-                    rebonMaterial.color.set("red");
+                    rebonMaterial.color.set("yellow");
                     
                     child.material = rebonMaterial;
                     if (child.isMesh) {
@@ -398,7 +404,7 @@ export default function room1() {
                     }
                 } else if (child.name == "cube" ){
                     const cubeMaterial = child.material.clone();
-                    cubeMaterial.color.set("green");
+                    cubeMaterial.color.set(giftColor);
                     
                     child.material = cubeMaterial;
                     if (child.isMesh) {
@@ -435,20 +441,20 @@ export default function room1() {
         
         if (/^sofa/.test(clickedObject.name)) {
             selectedPlace='sofa';
-            giftBox.position.set(600,150,235);
+            giftBox.position.set(800,50,235);
             console.log(selectedPlace);
         } else if (/^Sphere/.test(clickedObject.name) || clickedObject.name.includes("g_Star012_25")
                     || clickedObject.name.includes("ChristmasTree") || clickedObject.name.includes("leaves")) {
             selectedPlace='tree';
-            giftBox.position.set(-10,80,320);
+            giftBox.position.set(210,-20,340);
             console.log(selectedPlace);
         } else if (clickedObject.name.includes("window") || clickedObject.name.includes("Wall__5_")) {
             selectedPlace='window';
-            giftBox.position.set(-270,80, 730);
+            giftBox.position.set(-70,-20, 730);
             console.log(selectedPlace);
-        } else if (clickedObject.name === "group_0" || clickedObject.name.includes("Ground") ) {
+        } else if (clickedObject.name === "group_0" || clickedObject.name.includes("Ground") || clickedObject.name.includes("ground") ) {
             selectedPlace='ground';
-            giftBox.position.set(97, 80, 750);
+            giftBox.position.set(297, -20, 750);
             console.log(selectedPlace);
         } else {
             selectedPlace = 'unknown'; // 해당 조건이 없는 경우 기본값 설정
@@ -458,7 +464,7 @@ export default function room1() {
         currentGift = giftBox; // 새로운 큐브 저장
 
         // 승패판정
-        if (correctPlace === selectedPlace) {
+        if (correctPlace === selectedPlace) { // 승리
             setTimeout(() => {
                 if (loadingImage) {
                     loadingImage.src = '/images/giftGivingSuccess.gif';
@@ -469,7 +475,7 @@ export default function room1() {
                 // 여기서 다시하기 처음으로 버튼
         
             }, 1000);
-        } else if( chance > 3) { // 3번까지 기회
+        } else if( chance > 2) { // 3번까지 기회 다 씀
             setTimeout(() => {
                 console.log("3번 틀림")
                 if (loadingImage) {
@@ -477,17 +483,11 @@ export default function room1() {
                 }
                 loadingScreen.style.display = 'flex';
                 canvas.style.display = 'none';
-        
-                // 추가: 일정 시간 후 loadingScreen 숨기기
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                    canvas.style.display = 'block';
-                }, 5000); // 2초 후에 loadingScreen을 다시 숨김
 
                 // 여기서 다시하기 처음으로 버튼
 
             }, 1000);
-        } else {
+        } else { // 잘못 둠, 기회 남아 있음
             setTimeout(() => {
                 if (loadingImage) {
                     loadingImage.src = '/images/giftGivingFail.gif';
