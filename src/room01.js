@@ -173,11 +173,11 @@ export default function room1() {
     /** @@@@@@@@@@@@@@편지설정@@@@@@@@@@@@@@@@@@ */
 
     const letterImages = [
-        './images/곰인형이갖고싶은미셸.png',
-        './images/산타를노리는케이트.png',
-        './images/생양파율리.png',
-        './images/여름산타를원하는다니엘.png',
-        './images/울지않는찰리.png',
+        './images/letters/곰인형이갖고싶은미셸.png',
+        './images/letters/산타를노리는케이트.png',
+        './images/letters/생양파율리.png',
+        './images/letters/여름산타를원하는다니엘.png',
+        './images/letters/울지않는찰리.png',
     ];
 
     // 랜덤 이미지 변수
@@ -504,8 +504,9 @@ export default function room1() {
         }
         
     }
-    /*
+    
     // @@@@@@@@@@@@@@@드래그 클릭 인식 방지@@@@@@@@@@@
+    // 드래그와 클릭을 구분하기 위한 변수
     let isDragging = false;
     let mouseDownTime = 0;
 
@@ -522,20 +523,16 @@ export default function room1() {
 
     // 마우스 업 이벤트 핸들러
     function onDocumentMouseUp(event) {
-        if (!isDragging) {
-            // 짧은 클릭인 경우에만 onDocumentClick 호출
+        const clickDuration = Date.now() - mouseDownTime;
+        if (!isDragging && clickDuration < 20) { // 200ms 이하인 경우 짧은 클릭으로 간주
             onDocumentClick(event);
-        } else {
-            const clickDuration = Date.now() - mouseDownTime;
-            if (clickDuration < 200) { // 200ms 이하인 경우 짧은 클릭으로 간주
-                onDocumentClick(event);
-            }
         }
         isDragging = false;
     }
 
+    // 이벤트 리스너 등록
     document.addEventListener('mousedown', onDocumentMouseDown, false);
     document.addEventListener('mousemove', onDocumentMouseMove, false);
-    document.addEventListener('mouseup', onDocumentMouseUp, false); 
-    */
+    document.addEventListener('mouseup', onDocumentMouseUp, false);
+
 }
